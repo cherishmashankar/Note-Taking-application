@@ -66,6 +66,7 @@ public class NoteActivity extends AppCompatActivity implements
 
         }
         setOnTouch();
+        //set on Touch
     }
 
     private void setOnTouch(){
@@ -75,6 +76,7 @@ public class NoteActivity extends AppCompatActivity implements
         mCheck.setOnClickListener(this);
         mBack.setOnClickListener(this);
     }
+
 
     private void enableEditMode(){
         mBackArrowContainer.setVisibility(View.GONE);
