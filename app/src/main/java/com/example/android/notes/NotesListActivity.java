@@ -2,6 +2,7 @@ package com.example.android.notes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,10 +16,13 @@ import android.widget.Toolbar;
 
 import com.example.android.notes.Adapters.NotesRecyclerAdapter;
 import com.example.android.notes.models.Note;
+import com.example.android.notes.persistence.NoteDataBase;
+import com.example.android.notes.persistence.NoteRepository;
 import com.example.android.notes.utlis.VerticalSpacingDecorator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NotesListActivity extends AppCompatActivity implements
         NotesRecyclerAdapter.OnNoteClickListener,
@@ -33,6 +37,7 @@ public class NotesListActivity extends AppCompatActivity implements
     //variables
     private ArrayList<Note> mNotes = new ArrayList<>();
     private NotesRecyclerAdapter mNotesRecyclerAdapter;
+    private NoteRepository mNoteRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,22 +46,29 @@ public class NotesListActivity extends AppCompatActivity implements
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
         mFloatingActionButton.setOnClickListener(this);
+        mNoteRepository = new NoteRepository(this);
 
         initRecyclerView();
-        insertFakeData();
+        retrieveNotes();
         setSupportActionBar( (androidx.appcompat.widget.Toolbar) findViewById(R.id.notes_tool_bar));
         setTitle("Notes");
     }
 
-    private void insertFakeData() {
-        for(int i = 0; i < 1000; i++){
-            Note note = new Note();
-            note.setTitle("Title No: " + i);
-            note.setContent("Content: ###" + i);
-            note.setTimeStamp("Jan 2021");
-            mNotes.add(note);
-        }
-        mNotesRecyclerAdapter.notifyDataSetChanged();
+
+    private void retrieveNotes(){
+        mNoteRepository.getNote().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notes) {
+                if(mNotes.size() > 0){
+                    mNotes.clear();
+                }
+                if(notes != null){
+                    mNotes.addAll(notes);
+                }
+                mNotesRecyclerAdapter.notifyDataSetChanged();
+
+            }
+        });
     }
 
 
@@ -75,6 +87,7 @@ public class NotesListActivity extends AppCompatActivity implements
     public void onNoteClick(int position) {
 
         Log.e(TAG, "onNoteClick: Position " + position);
+        Log.e(TAG, "onNoteClick: Title: " + mNotes.get(position).toString() );
         Intent intent = new Intent(this, NoteActivity.class);
         intent.putExtra("selected_notes", mNotes.get(position));
         startActivity(intent);
@@ -95,14 +108,12 @@ public class NotesListActivity extends AppCompatActivity implements
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            deleteNotes(mNotes.get(viewHolder.getBindingAdapterPosition()));
+
+            mNoteRepository.deleteNote(mNotes.get(viewHolder.getBindingAdapterPosition()));
+            mNotesRecyclerAdapter.notifyDataSetChanged();
 
         }
     };
 
-    private void deleteNotes(Note note){
-        mNotes.remove(note);
-        mNotesRecyclerAdapter.notifyDataSetChanged();
 
-    }
 }

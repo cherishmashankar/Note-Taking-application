@@ -34,7 +34,8 @@
         android:text="Content"
         android:textColor="@color/black"
         android:textSize="24sp"
-        android:gravity="top"/>
+        android:gravity="top"
+        android:imeOptions="flagNoExtractUi"/>
 
 
 </LinearLayout>

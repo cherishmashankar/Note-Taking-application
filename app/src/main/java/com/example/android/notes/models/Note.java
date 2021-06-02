@@ -3,24 +3,44 @@ package com.example.android.notes.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "notes")
 public class Note implements Parcelable {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+    @ColumnInfo(name = "title")
     private String title;
+
+    @ColumnInfo(name = "content")
     private String content;
-    private String TimeStamp;
 
-    public Note(String title, String content, String timeStamp) {
-        this.title = title;
-        this.content = content;
-        TimeStamp = timeStamp;
-    }
+    @ColumnInfo(name = "timeStamp")
+    private String timeStamp;
 
+
+
+    @Ignore
     public Note() {
     }
 
+    public Note(int id, String title, String content, String timeStamp) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.timeStamp = timeStamp;
+    }
+
     protected Note(Parcel in) {
+        id = in.readInt();
         title = in.readString();
         content = in.readString();
-        TimeStamp = in.readString();
+        timeStamp = in.readString();
     }
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
@@ -51,22 +71,32 @@ public class Note implements Parcelable {
         this.content = content;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getTimeStamp() {
-        return TimeStamp;
+        return timeStamp;
     }
 
     public void setTimeStamp(String timeStamp) {
-        TimeStamp = timeStamp;
+        this.timeStamp = timeStamp;
     }
 
     @Override
     public String toString() {
         return "Note{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", TimeStamp='" + TimeStamp + '\'' +
+                ", TimeStamp='" + timeStamp + '\'' +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -75,8 +105,9 @@ public class Note implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(title);
         dest.writeString(content);
-        dest.writeString(TimeStamp);
+        dest.writeString(timeStamp);
     }
 }

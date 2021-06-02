@@ -12,6 +12,12 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation":
+                                      "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -34,7 +40,11 @@ dependencies {
     //RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
     //To add ToolBar
-
     implementation 'com.android.support:design:28.0.0'
+    //room dependencies
+    def room_version = "2.3.0"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
 }
