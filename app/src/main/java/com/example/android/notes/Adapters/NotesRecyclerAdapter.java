@@ -1,5 +1,6 @@
 package com.example.android.notes.Adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.notes.R;
 import com.example.android.notes.models.Note;
+import com.example.android.notes.utlis.Utility;
 
 import java.util.ArrayList;
 import java.util.TimeZone;
 
 public class NotesRecyclerAdapter extends RecyclerView.Adapter<NotesRecyclerAdapter.ViewHolder> {
+    private static final String TAG = "NotesRecyclerAdapter";
 
     private ArrayList<Note> mNote = new ArrayList<>();
     private OnNoteClickListener mOnNoteClickListener;
@@ -33,8 +36,18 @@ public class NotesRecyclerAdapter extends RecyclerView.Adapter<NotesRecyclerAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.title.setText(mNote.get(position).getTitle());
-        holder.timeStamp.setText(mNote.get(position).getTimeStamp());
+
+        try{
+            String month = mNote.get(position).getTimeStamp().substring(0,2);
+            month = Utility.getMonthFromNumber(month);
+            String year = mNote.get(position).getTimeStamp().substring(3);
+            String timeStamp = month + " " + year;
+            holder.title.setText(mNote.get(position).getTitle());
+            holder.timeStamp.setText(timeStamp);
+        }catch(NullPointerException e){
+            Log.d(TAG, "onBindViewHolder: There is a error in Date");
+        }
+
 
     }
 
